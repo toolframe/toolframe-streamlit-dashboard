@@ -26,7 +26,10 @@ def render_management(provider):
             "Plugin": item["id"],
             "Enabled": item["desired"].get("enabled", False),
             "State": item["runtime"].get("state", "installed"),
-            "Healthy": item["health_fresh"],
+            "Healthy": item.get(
+                "healthy",
+                item["health_fresh"] and item["runtime"].get("state") == "active",
+            ),
             "Active": (item["active"] or "")[:12],
             "Candidate": (item["candidate"] or "")[:12],
         }
