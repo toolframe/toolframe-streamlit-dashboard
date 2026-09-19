@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 import threading
 from dataclasses import dataclass
 from pathlib import Path
@@ -101,7 +102,7 @@ class DashboardProvider(Plugin):
                 raise PluginError("duplicate_resource", resource.key)
             seen.add(resource.key)
             render = load_object(resource.resource.data["entrypoint"])
-            if not callable(render) or asyncio.iscoroutinefunction(render):
+            if not callable(render) or inspect.iscoroutinefunction(render):
                 raise PluginError(
                     "invalid_page",
                     "Page render(context) must be a synchronous callable",
