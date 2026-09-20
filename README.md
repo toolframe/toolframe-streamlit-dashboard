@@ -22,6 +22,17 @@ catalog epoch becomes visible only on `commit`; `abort` preserves live navigatio
 The management page submits operations to core and reads their journal; it does
 not install packages or access SQLite itself.
 
+For enable, reload, disable, stop and remove, choose **Preview operation**, review
+the affected plugins, then choose **Apply enable/reload/disable/stop/remove**.
+A preview does not change plugin state. Only stop offers the separate force-stop
+option; temporary runtime validation is offered only for validate.
+
+Pending operations update automatically. Completion or errors appear beside the
+controls, and the operation ID stays in the page URL so a browser refresh or
+Dashboard replacement can resume reading its result. Operation history can reopen
+a preview or result. Disabled plugins remain in the management list for re-enabling;
+their pages and tools disappear after the disable operation completes.
+
 Development: `uv sync --group dev`, `uv run pytest -q`, `uv build --no-sources`.
 Each lifecycle integration test uses a fresh subprocess because Streamlit's
 runtime singleton belongs to the process, not a reloadable plugin object.
