@@ -4,6 +4,8 @@ This provider runs one native Streamlit process for the shared UI environment.
 Business plugins contribute synchronous `render(context)` pages; navigation and
 plugin management are provided here. Pages use the SDK's synchronous
 `context.services.require(name, version=1).call(method, params)` proxy.
+The Streamlit toolbar uses viewer mode, hiding its Deploy and developer controls.
+Plugin lifecycle operations remain available on the Toolframe management page.
 
 Core resolves the provider and all contributing plugin wheels (with their `ui`
 extras) together before replacing the worker. Changing any page package replaces

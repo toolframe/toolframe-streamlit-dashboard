@@ -53,6 +53,7 @@ class DashboardProvider(Plugin):
             "server.runOnSave": False,
             "server.enableStaticServing": False,
             "browser.gatherUsageStats": False,
+            "client.toolbarMode": "viewer",
         }.items():
             config.set_option(name, value)
         _current = self
