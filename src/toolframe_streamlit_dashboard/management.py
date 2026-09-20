@@ -11,6 +11,7 @@ _PENDING = {"queued", "running"}
 def render_management(provider):
     st.title("Plugin management")
     try:
+        permissions = provider.access("presentation")["allowed_scopes"]
         status = provider.manage("status")
     except PluginError as error:
         st.error(str(error))
@@ -41,13 +42,23 @@ def render_management(provider):
     )
     if st.button("Refresh status"):
         st.rerun()
+    can_manage = "system.plugins.manage" in permissions
+    can_migrate = "system.migrations.manage" in permissions
+    if not can_manage and not can_migrate:
+        st.caption("Read-only plugin diagnostics")
+        render_operation(provider)
+        st.subheader("Operations")
+        for operation in status["operations"][:15]:
+            with st.expander(f"{operation['kind']} · {operation['status']}"):
+                st.json(operation)
+        return
     with st.form("install"):
         source = st.text_input(
             "Plugin source",
             placeholder="path:/absolute/plugin or pypi:package==version",
         )
         enable = st.checkbox("Enable after validation", value=False)
-        if st.form_submit_button("Install and validate"):
+        if st.form_submit_button("Install and validate", disabled=not can_manage):
             if not source.strip():
                 st.error("Enter a plugin source.")
             else:
@@ -62,16 +73,20 @@ def render_management(provider):
             identifier = st.selectbox("Plugin", identifiers)
             action = st.selectbox(
                 "Operation",
-                [
-                    "validate",
-                    "update",
-                    "enable",
-                    "reload",
-                    "disable",
-                    "stop",
-                    "remove",
-                    "migrate-plan",
-                ],
+                (
+                    [
+                        "validate",
+                        "update",
+                        "enable",
+                        "reload",
+                        "disable",
+                        "stop",
+                        "remove",
+                    ]
+                    if can_manage
+                    else []
+                )
+                + (["migrate-plan"] if can_migrate else []),
             )
             params = {"id": identifier}
             if action == "validate":
@@ -102,7 +117,9 @@ def render_management(provider):
         with st.form("migration"):
             migration_owner = st.selectbox("Migration owner", identifiers)
             plan_id = st.text_input("Reviewed migration plan ID")
-            if st.form_submit_button("Apply reviewed migration"):
+            if st.form_submit_button(
+                "Apply reviewed migration", disabled=not can_migrate
+            ):
                 if plan_id.strip():
                     submit(
                         provider,
@@ -186,7 +203,16 @@ def poll_operation(provider, operation_id):
     st.caption(
         "Status updates automatically. You can also refresh or reconnect to this page."
     )
-    if st.button("Request cancellation", key=f"pending-cancel-{operation_id}"):
+    scope = (
+        "system.migrations.manage"
+        if operation["kind"] in {"migrate-plan", "migrate-apply"}
+        else "system.plugins.manage"
+    )
+    if st.button(
+        "Request cancellation",
+        key=f"pending-cancel-{operation_id}",
+        disabled=scope not in provider.access("presentation")["allowed_scopes"],
+    ):
         submit(provider, "cancel", {"id": operation_id})
 
 
@@ -242,7 +268,12 @@ def render_plan_preview(provider, plan):
         st.write("Missing dependencies", plan["missing_dependencies"])
     if plan.get("migrations"):
         st.write("Migration requirements", plan["migrations"])
-    if st.button(f"Apply {plan['action']}", type="primary"):
+    if st.button(
+        f"Apply {plan['action']}",
+        type="primary",
+        disabled="system.plugins.manage"
+        not in provider.access("presentation")["allowed_scopes"],
+    ):
         submit(
             provider,
             plan["action"],

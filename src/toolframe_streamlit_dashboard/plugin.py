@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from toolframe_sdk import (
+    AuthorizationSpec,
     OwnedResource,
     PageContext,
     Plugin,
@@ -131,11 +132,43 @@ class DashboardProvider(Plugin):
         return {"epoch": epoch}
 
     def render_page(self, page, epoch):
-        page.render(PageContext(self.context, page.resource, epoch, self.loop))
+        access = self.access("presentation")
+        if not set(page.resource.resource.required_scopes) <= set(
+            access["allowed_scopes"]
+        ):
+            raise PluginError("forbidden", "This page requires additional scopes")
+        page.render(
+            PageContext(
+                self.context,
+                page.resource,
+                epoch,
+                self.loop,
+                access_context=self.access_context(),
+                access=access,
+            )
+        )
+
+    def access_context(self):
+        import streamlit as st
+
+        reference = st.context.headers.get("X-Toolframe-Context")
+        if not reference:
+            raise PluginError(
+                "authentication_required",
+                "Open the Dashboard through the Toolframe application URL",
+            )
+        return reference
+
+    def access(self, action, params=None):
+        return asyncio.run_coroutine_threadsafe(
+            self.context.access(action, params, access_context=self.access_context()),
+            self.loop,
+        ).result(timeout=30)
 
     def manage(self, action, params=None):
         future = asyncio.run_coroutine_threadsafe(
-            self.context.manage(action, params), self.loop
+            self.context.manage(action, params, access_context=self.access_context()),
+            self.loop,
         )
         try:
             return future.result(timeout=30)
@@ -152,4 +185,5 @@ plugin = PluginDefinition(
     kind="provider",
     provider_kind="dashboard",
     factory="toolframe_streamlit_dashboard.plugin:DashboardProvider",
+    authorization=AuthorizationSpec(),
 )

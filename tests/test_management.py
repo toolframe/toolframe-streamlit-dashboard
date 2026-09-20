@@ -32,6 +32,16 @@ class FakeProvider:
         self.enabled = True
         self.history = []
 
+    def access(self, action):
+        assert action == "presentation"
+        return {
+            "allowed_scopes": [
+                "system.plugins.read",
+                "system.plugins.manage",
+                "system.migrations.manage",
+            ]
+        }
+
     def manage(self, action, params=None):
         self.calls.append((action, params))
         if action == "status":
@@ -243,3 +253,24 @@ def test_malformed_preview_has_no_apply_button():
     ui = run_management(FakeProvider(operation), {"operation": "plan-operation"})
     assert any("missing required apply details" in item.value for item in ui.error)
     assert not any(button.label == "Apply disable" for button in ui.button)
+
+
+def test_read_only_diagnostics_cannot_cancel_or_apply_operations():
+    class Reader(FakeProvider):
+        def access(self, action):
+            return {"allowed_scopes": ["system.plugins.read"]}
+
+    operation = ready_plan("disable")
+    operation.update(status="running", result=None)
+    provider = Reader(operation)
+    ui = run_management(provider, {"operation": "plan-operation"})
+    assert not ui.exception
+    assert next(
+        button for button in ui.button if button.label == "Request cancellation"
+    ).disabled
+    assert not any(button.label == "Install and validate" for button in ui.button)
+    provider.operations["plan-operation"] = ready_plan("disable")
+    ui.run()
+    assert next(
+        button for button in ui.button if button.label == "Apply disable"
+    ).disabled

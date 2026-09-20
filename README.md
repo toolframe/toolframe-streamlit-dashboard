@@ -17,6 +17,18 @@ Core owns the stable `/` gateway, management credentials and HTTP/WebSocket
 admission. Streamlit owns its server lifespan and script threads. A stuck script
 thread is a cleanup failure, never a successful in-process code reload.
 
+SDK 0.2 page contexts carry a host-issued reference for each browser connection.
+Pages use `context.can(scope)` to adapt controls; core checks every service call.
+Navigation filters page scopes and the plugin-management page requires
+`system.plugins.read`. Its mutation controls require the relevant management
+scopes. A password without system grants cannot reach these operations through
+the bridge. Incoming browser identity headers are not trusted.
+
+The shared header displays local control, protected access or public access with
+its reason. It remains present when the separate Dashboard Auth plugin is
+unavailable. Its one-second refresh is presentation polling and does not count
+as password activity. Use `activity=False` for other background service polling.
+
 `prepare` imports and validates page entry points without rendering them. A
 catalog epoch becomes visible only on `commit`; `abort` preserves live navigation.
 The management page submits operations to core and reads their journal; it does
