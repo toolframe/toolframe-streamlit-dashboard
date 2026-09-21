@@ -4,6 +4,7 @@ import streamlit as st
 from toolframe_sdk import PluginError
 
 from .dependencies import render_dependencies
+from .history import local_timestamp, render_history, reset_history
 
 _OPERATION_QUERY_KEY = "operation"
 _PLANNED_ACTIONS = {"enable", "reload", "disable", "stop", "remove"}
@@ -50,10 +51,7 @@ def render_management(provider):
     if not can_manage and not can_migrate:
         st.caption("Read-only plugin diagnostics")
         render_operation(provider)
-        st.subheader("Operations")
-        for operation in status["operations"][:15]:
-            with st.expander(f"{operation['kind']} · {operation['status']}"):
-                st.json(operation)
+        render_history(provider, permissions, track_operation, submit)
         return
     with st.form("install"):
         source = st.text_input(
@@ -135,19 +133,7 @@ def render_management(provider):
                     st.error("Run migrate-plan and review its result first.")
     if not identifiers:
         render_operation(provider)
-    st.subheader("Operations")
-    for operation in status["operations"][:15]:
-        with st.expander(
-            f"{operation['kind']} · {operation.get('target') or 'application'} · {operation['status']}"
-        ):
-            st.json(operation)
-            label = "Review preview" if operation["kind"] == "plan" else "View result"
-            if st.button(label, key=f"view-{operation['id']}"):
-                track_operation(operation["id"])
-            if operation["status"] in _PENDING and st.button(
-                "Request cancellation", key=f"cancel-{operation['id']}"
-            ):
-                submit(provider, "cancel", {"id": operation["id"]})
+    render_history(provider, permissions, track_operation, submit)
 
 
 def submit(provider, action, params):
@@ -157,6 +143,7 @@ def submit(provider, action, params):
         st.error(f"{error.code}: {error}")
         return
     if isinstance(result, dict) and result.get("id"):
+        reset_history()
         track_operation(result["id"])
     else:
         st.error(
@@ -229,6 +216,10 @@ def render_operation(provider):
     if not operation:
         return
     st.subheader("Operation result")
+    if operation.get("sequence"):
+        st.caption(
+            f"Operation #{operation['sequence']} · {local_timestamp(operation.get('created'))}"
+        )
     st.caption(f"Operation ID: {operation_id}")
     status = operation["status"]
     if status in _PENDING:

@@ -51,6 +51,18 @@ their pages and tools disappear after the disable operation completes.
 Disabled plugins default to **enable** and do not offer reload/disable/stop.
 Enable restores the installed version; update stages a freshly resolved package.
 
+With core 0.5.0+, **Operations** queries the complete core journal with plugin,
+action and result filters. It defaults to 10 rows, with 25/50 options and
+Newer/Older navigation. Each row has a permanent operation number, browser-local
+creation time, action, target and result. Preview rows include the intended action
+(for example, `plan enable`). Viewing a result uses its durable UUID.
+
+Page navigation retains a sequence boundary so new arrivals do not shift older
+pages. **Refresh history**, changing filters or submitting an operation starts
+at the latest first page. The count indicates newer arrivals; statuses remain
+current. Read-only operators can filter, page and inspect results, while apply
+and cancel retain their existing scope checks.
+
 The **Plugin dependencies & impact** accordion sits directly below the status
 table and starts collapsed. It reads core's `dependency_graph` diagnostics
 (core 0.4.0+) under the existing `system.plugins.read` permission. Nodes show
@@ -70,6 +82,11 @@ It describes selected versions; inactive declarations are labeled `last_candidat
 New candidates or pending configuration changes can produce a different plan, so
 the existing **Preview operation** / **Apply** workflow remains authoritative.
 Refreshing status refreshes the graph too. An older core shows an upgrade hint.
+
+The graph is generated from core state, including newly installed plugins and
+their declared dependencies. `plugin new` only creates source and does not add a
+node; use `plugin add` to install it. Refresh status after changes made elsewhere.
+This is a refreshed snapshot, not a continuously pushed graph animation.
 
 Development: `uv sync --group dev`, `uv run pytest -q`, `uv build --no-sources`.
 Each lifecycle integration test uses a fresh subprocess because Streamlit's

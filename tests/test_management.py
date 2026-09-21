@@ -8,6 +8,8 @@ from toolframe_sdk import PluginError
 def ready_plan(action="reload"):
     return {
         "id": "plan-operation",
+        "sequence": 1,
+        "created": 1789959000,
         "kind": "plan",
         "target": "alpha",
         "request": {"action": action, "id": "alpha"},
@@ -64,6 +66,40 @@ class FakeProvider:
             return {"id": "plan-operation", "status": "queued"}
         if action == "operation":
             return self.operations.get(params["id"])
+        if action == "operations":
+            rows = self.history
+            through = params.get("through")
+            if through is None:
+                through = max((row["sequence"] for row in rows), default=0)
+            selected = [
+                row
+                for row in rows
+                if row["sequence"] <= through
+                and all(
+                    row.get(field) == (value or None)
+                    for field, value in params.items()
+                    if field in {"target", "kind", "status"}
+                )
+            ]
+            selected.sort(key=lambda row: row["sequence"], reverse=True)
+            size = params.get("page_size", 10)
+            pages = max(1, (len(selected) + size - 1) // size)
+            page = min(params.get("page", 1), pages)
+            return {
+                "items": selected[(page - 1) * size : page * size],
+                "page": page,
+                "page_size": size,
+                "pages": pages,
+                "total": len(selected),
+                "through": through,
+                "newer_count": sum(row["sequence"] > through for row in rows),
+                "filters": {
+                    field: sorted(
+                        {row[field] for row in rows if row.get(field) is not None}
+                    )
+                    for field in ("target", "kind", "status")
+                },
+            }
         self.operations["submitted-operation"] = {
             "id": "submitted-operation",
             "kind": action,

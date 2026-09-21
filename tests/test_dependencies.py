@@ -99,7 +99,7 @@ def test_graph_starts_collapsed_above_hint_and_is_read_only():
     assert any("alpha, dashboard" in item.value for item in ui.markdown)
     ui.selectbox(key="dependency-action").set_value("disable").run()
     assert not ui.exception
-    assert {action for action, _ in provider.calls} == {"status"}
+    assert {action for action, _ in provider.calls} == {"status", "operations"}
     assert "operation" not in ui.query_params
     ui.selectbox(key="dependency-focus").set_value("disabled").run()
     assert any("outside the selected runtime graph" in item.value for item in ui.info)

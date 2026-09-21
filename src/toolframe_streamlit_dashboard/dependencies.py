@@ -70,6 +70,11 @@ def graph_dot(report, focus=None, action="reload"):
 
 def render_dependencies(status):
     with st.expander("Plugin dependencies & impact", expanded=False):
+        st.caption(
+            "This graph follows installed plugins and their current state. "
+            "Refresh status after installing or changing a plugin. "
+            "Creating source with plugin new does not install it; use plugin add first."
+        )
         report = status.get("dependency_graph")
         if not report:
             st.info("Update core to view the dependency graph.")
