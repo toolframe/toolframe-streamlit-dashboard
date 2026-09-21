@@ -67,7 +67,7 @@ def render_history(provider, permissions, track_operation, submit):
             options.append(selected)
         with column:
             st.selectbox(label, options, key=_PREFIX + field, on_change=reset_history)
-    size, refresh = st.columns(2)
+    size, refresh = st.columns(2, vertical_alignment="bottom")
     with size:
         st.selectbox(
             "Rows per page",
@@ -75,7 +75,7 @@ def render_history(provider, permissions, track_operation, submit):
             key=_PREFIX + "page_size",
             on_change=reset_history,
         )
-    with refresh:
+    with refresh, st.container(horizontal=True, horizontal_alignment="right"):
         st.button("Refresh history", on_click=reset_history)
     page, total = result["page"], result["total"]
     first = (page - 1) * result["page_size"] + 1 if total else 0
@@ -116,10 +116,8 @@ def render_history(provider, permissions, track_operation, submit):
                 disabled=scope not in permissions,
             ):
                 submit(provider, "cancel", {"id": operation["id"]})
-    newer, older = st.columns(2)
-    with newer:
+    with st.container(horizontal=True, horizontal_alignment="distribute"):
         st.button("Newer", disabled=page <= 1, on_click=move_page, args=(page - 1,))
-    with older:
         st.button(
             "Older",
             disabled=page >= result["pages"],

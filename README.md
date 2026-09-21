@@ -56,6 +56,8 @@ action and result filters. It defaults to 10 rows, with 25/50 options and
 Newer/Older navigation. Each row has a permanent operation number, browser-local
 creation time, action, target and result. Preview rows include the intended action
 (for example, `plan enable`). Viewing a result uses its durable UUID.
+The refresh button aligns with the bottom of the page-size selector, at the right
+edge. Newer and Older sit at opposite edges of one pagination row.
 
 Page navigation retains a sequence boundary so new arrivals do not shift older
 pages. **Refresh history**, changing filters or submitting an operation starts
