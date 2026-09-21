@@ -45,6 +45,26 @@ Dashboard replacement can resume reading its result. Operation history can reope
 a preview or result. Disabled plugins remain in the management list for re-enabling;
 their pages and tools disappear after the disable operation completes.
 
+The **Plugin dependencies & impact** accordion sits directly below the status
+table and starts collapsed. It reads core's `dependency_graph` diagnostics
+(core 0.4.0+) under the existing `system.plugins.read` permission. Nodes show
+Cordis lifecycle state and current health; arrows run from consumer to supplier.
+Solid lines are required services, dashed lines optional services, and dotted
+lines presentation providers. Missing suppliers and inactive plugins stay visible.
+
+Select a plugin and **reload** or **disable** to highlight the lifecycle cohort,
+optional consumers, and page/tool/document entries that may reconnect or refresh.
+The cohort comes from core's actual planner. Presentation refreshes do not imply
+that the provider or every page's business process restarts. Use the full-screen
+control to enlarge the graph; the relationship table includes exact service names
+and versions.
+
+This view never installs, validates, submits an operation, or changes composition.
+It describes selected versions; inactive declarations are labeled `last_candidate`.
+New candidates or pending configuration changes can produce a different plan, so
+the existing **Preview operation** / **Apply** workflow remains authoritative.
+Refreshing status refreshes the graph too. An older core shows an upgrade hint.
+
 Development: `uv sync --group dev`, `uv run pytest -q`, `uv build --no-sources`.
 Each lifecycle integration test uses a fresh subprocess because Streamlit's
 runtime singleton belongs to the process, not a reloadable plugin object.

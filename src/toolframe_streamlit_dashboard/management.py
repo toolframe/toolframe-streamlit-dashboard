@@ -3,6 +3,8 @@
 import streamlit as st
 from toolframe_sdk import PluginError
 
+from .dependencies import render_dependencies
+
 _OPERATION_QUERY_KEY = "operation"
 _PLANNED_ACTIONS = {"enable", "reload", "disable", "stop", "remove"}
 _PENDING = {"queued", "running"}
@@ -36,6 +38,7 @@ def render_management(provider):
         for item in status["plugins"]
     ]
     st.dataframe(rows, hide_index=True, width="stretch")
+    render_dependencies(status)
     st.caption(
         "Disabled plugins remain in this list so you can enable them again. "
         "Their pages and tools are removed when disabling completes."
