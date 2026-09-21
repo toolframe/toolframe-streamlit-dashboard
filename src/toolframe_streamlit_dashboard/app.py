@@ -1,6 +1,7 @@
 """Executed by Streamlit in its normal script thread."""
 
 from functools import partial
+from pathlib import Path
 
 import streamlit as st
 from toolframe_sdk import PluginError
@@ -11,6 +12,7 @@ from toolframe_streamlit_dashboard.plugin import current
 provider = current()
 epoch, pages = provider.snapshot
 st.set_page_config(page_title="Toolframe", layout="wide")
+st.html(Path(__file__).with_name("chrome.css"))
 
 
 @st.fragment(run_every=1)

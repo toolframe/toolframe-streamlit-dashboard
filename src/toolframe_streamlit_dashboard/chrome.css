@@ -1,0 +1,27 @@
+/* Streamlit 1.61's native busy widget still owns visibility, its accessible
+   "Running..." label and the adjacent Stop button. Replace only its artwork. */
+[data-testid="stStatusWidgetRunningIcon"] > * {
+  display: none;
+}
+
+[data-testid="stStatusWidgetRunningIcon"]::after {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  box-sizing: border-box;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: toolframe-busy-spin 0.8s linear infinite;
+}
+
+@keyframes toolframe-busy-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-testid="stStatusWidgetRunningIcon"]::after {
+    animation: none;
+  }
+}

@@ -5,6 +5,10 @@ Business plugins contribute synchronous `render(context)` pages; navigation and
 plugin management are provided here. Pages use the SDK's synchronous
 `context.services.require(name, version=1).call(method, params)` proxy.
 The Streamlit toolbar uses viewer mode, hiding its Deploy and developer controls.
+Its native running indicator shows a circular spinner instead of cycling sports
+icons. The Running label, Stop button and connection indicators remain available;
+reduced-motion preferences disable the rotation. The narrowly scoped styling
+targets Streamlit 1.61's busy-widget test ID and should be checked on upgrades.
 Plugin lifecycle operations remain available on the Toolframe management page.
 
 Core resolves the provider and all contributing plugin wheels (with their `ui`
