@@ -74,21 +74,23 @@ def render_management(provider):
     if identifiers:
         with st.container(border=True):
             identifier = st.selectbox("Plugin", identifiers)
+            enabled = next(
+                item["desired"].get("enabled", False)
+                for item in status["plugins"]
+                if item["id"] == identifier
+            )
+            actions = (
+                ["validate", "update", "enable", "reload", "disable", "stop", "remove"]
+                if enabled
+                else ["enable", "validate", "update", "remove"]
+            )
+            if not enabled:
+                st.caption(
+                    "This plugin is disabled. Enable it to restore its pages and tools."
+                )
             action = st.selectbox(
                 "Operation",
-                (
-                    [
-                        "validate",
-                        "update",
-                        "enable",
-                        "reload",
-                        "disable",
-                        "stop",
-                        "remove",
-                    ]
-                    if can_manage
-                    else []
-                )
+                (actions if can_manage else [])
                 + (["migrate-plan"] if can_migrate else []),
             )
             params = {"id": identifier}

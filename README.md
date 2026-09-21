@@ -44,6 +44,8 @@ controls, and the operation ID stays in the page URL so a browser refresh or
 Dashboard replacement can resume reading its result. Operation history can reopen
 a preview or result. Disabled plugins remain in the management list for re-enabling;
 their pages and tools disappear after the disable operation completes.
+Disabled plugins default to **enable** and do not offer reload/disable/stop.
+Enable restores the installed version; update stages a freshly resolved package.
 
 The **Plugin dependencies & impact** accordion sits directly below the status
 table and starts collapsed. It reads core's `dependency_graph` diagnostics

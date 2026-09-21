@@ -150,6 +150,21 @@ def test_pending_preview_and_completed_disable_survive_new_browser_sessions():
     assert len([call for call in provider.calls if call[0] == "disable"]) == 1
 
 
+def test_disabled_plugin_defaults_to_enable_instead_of_reload():
+    provider = FakeProvider(ready_plan("enable"))
+    provider.enabled = False
+    ui = run_management(provider)
+    selector = next(item for item in ui.selectbox if item.label == "Operation")
+    assert selector.value == "enable"
+    assert "reload" not in selector.options
+    assert any("Enable it to restore" in item.value for item in ui.caption)
+    click(ui, "Preview operation")
+    assert ("plan", {"action": "enable", "id": "alpha"}) in provider.calls
+    click(ui, "Apply enable")
+    assert provider.calls[-1][0] != "reload"
+    assert any(action == "enable" for action, _ in provider.calls)
+
+
 def test_plan_that_completes_during_poll_reruns_into_an_apply_button():
     class FinishingProvider(FakeProvider):
         reads = 0
