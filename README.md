@@ -93,3 +93,7 @@ This is a refreshed snapshot, not a continuously pushed graph animation.
 Development: `uv sync --group dev`, `uv run pytest -q`, `uv build --no-sources`.
 Each lifecycle integration test uses a fresh subprocess because Streamlit's
 runtime singleton belongs to the process, not a reloadable plugin object.
+
+## License
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
