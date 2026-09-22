@@ -119,7 +119,9 @@ def app(provider):
 def run_management(provider, query_params=None):
     ui = AppTest.from_function(app, args=(provider,), default_timeout=10)
     ui.query_params.update(query_params or {})
-    return ui.run()
+    # Fresh wheel environments may spend more than 10s loading pandas/PyArrow
+    # native modules. Allow that on startup; later UI runs retain the 10s limit.
+    return ui.run(timeout=60)
 
 
 def select_operation(ui, value):

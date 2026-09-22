@@ -94,6 +94,11 @@ Development: `uv sync --group dev`, `uv run pytest -q`, `uv build --no-sources`.
 Each lifecycle integration test uses a fresh subprocess because Streamlit's
 runtime singleton belongs to the process, not a reloadable plugin object.
 
+For fresh-environment CI checks, run
+`uv run --isolated --no-project --python 3.14.7 python -I scripts/validate.py`.
+See [CI and package publishing](docs/ci.md) for GitHub Actions, validation artifacts,
+pinned SDK prerequisites and manual TestPyPI/PyPI Trusted Publishing setup.
+
 ## License
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
