@@ -34,7 +34,7 @@ def access_header():
     elif current_access["mode"] == "waiting":
         st.info("Access is preparing. Reconnecting shortly…")
     else:
-        st.caption("Password protected access")
+        st.caption("Protected access")
 
 
 try:
@@ -43,13 +43,13 @@ except PluginError as error:
     st.error(error.message)
     st.stop()
 access_header()
-if access["actor"] == "password" or access["actor"] == "operator":
+if access["actor"] in {"password", "operator", "user"}:
     st.markdown(
         '<form method="post" action="/_toolframe/auth/logout"><button type="submit">Sign out</button></form>',
         unsafe_allow_html=True,
     )
 else:
-    st.link_button("Sign in with a password", access["login_url"])
+    st.link_button("Sign in", access["login_url"])
 navigation = [
     st.Page(
         partial(provider.render_page, page, epoch),
