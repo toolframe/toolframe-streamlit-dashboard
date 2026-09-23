@@ -903,7 +903,7 @@ wheels = [
 
 [[package]]
 name = "toolframe-sdk"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "../toolframe-sdk" }
 dependencies = [
     { name = "jsonschema" },
@@ -925,7 +925,7 @@ dev = [
 
 [[package]]
 name = "toolframe-streamlit-dashboard"
-version = "0.4.1"
+version = "0.4.2"
 source = { editable = "." }
 dependencies = [
     { name = "streamlit" },
