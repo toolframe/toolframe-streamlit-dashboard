@@ -16,7 +16,7 @@ import tomllib
 import zipfile
 from pathlib import Path
 
-SDK_REVISION = "833c415bd3a4f75613613d4f148d7a3a41a9528c"
+SDK_REVISION = "f256b14d796c819174368b3bb98c0dabeb4bdc21"
 ROOT = Path(__file__).resolve().parents[1]
 
 

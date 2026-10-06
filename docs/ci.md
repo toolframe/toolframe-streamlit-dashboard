@@ -28,7 +28,7 @@ It does not use or modify a repository's `.venv`, `dist`,
 `uv.lock`, or SDK working tree. The source snapshot includes this repository's
 current tracked changes and non-ignored new files, so local edits can be checked
 before committing. SDK source always comes from commit
-`a9000ab6ad9743a8f68b5ae3ef7c54fdbf15d6de`, regardless of its checked-out branch.
+`871416a9f9cbcfa79298235781ff193e1ad08a12`, regardless of its checked-out branch.
 
 The validation sequence is:
 
