@@ -28,7 +28,7 @@ It does not use or modify a repository's `.venv`, `dist`,
 `uv.lock`, or SDK working tree. The source snapshot includes this repository's
 current tracked changes and non-ignored new files, so local edits can be checked
 before committing. SDK source always comes from commit
-`871416a9f9cbcfa79298235781ff193e1ad08a12`, regardless of its checked-out branch.
+`ef91b609137a5fe7bae8e0c893e74b096ff06ffe`, regardless of its checked-out branch.
 
 The validation sequence is:
 
@@ -68,57 +68,10 @@ published requirements. `installed.txt` records the actual runtime resolution.
 Temporary source/environments are removed when the command finishes; keep or
 remove the printed artifact directory as needed.
 
-## GitHub prerequisites
+## Publication
 
-The default dependency repository is
-`${github.repository_owner}/toolframe-sdk`. Set the repository Actions variable
-`TOOLFRAME_REPOSITORY_OWNER` only if the SDK belongs to a different trusted owner.
-For a fork pull request the fallback remains the base repository owner; the
-workflow never derives it from the pull request's contributor. Push the SDK's
-exact pinned commit to that owner before running remote CI.
-
-The checked-in workflow assumes that the SDK can be read publicly. A default
-repository `GITHUB_TOKEN` does not grant access to another private repository.
-Private SDK hosting needs an explicitly configured read-only GitHub App/token
-checkout arrangement, including a decision about fork PR access, before CI can
-run there. No credential or owner has been invented in these files.
-
-## Publish to TestPyPI or PyPI
-
-`Publish Python package` is manual only. It defaults to `testpypi`; select `pypi`
-explicitly for production. A push, pull request or CI run cannot upload a package.
-The dispatch must target the exact `v<project.version>` tag; the current version
-requires `v0.4.1`. Branch dispatches and mismatched versions fail the release gate.
-
-Before a future upload:
-
-1. Configure this repository's GitHub remote, push the workflows and SDK commit,
-   and create/push the version tag on the intended release commit. The workflow
-   must also exist on the default branch for manual dispatch to be available.
-2. Create GitHub environments named **testpypi** and **pypi**. Configure appropriate
-   tag restrictions and required reviewers, especially for `pypi`.
-3. In TestPyPI and PyPI separately, configure a Trusted Publisher (or pending
-   publisher for a new project) for `toolframe-streamlit-dashboard`: the actual
-   GitHub owner, repository **toolframe-streamlit-dashboard**, workflow filename
-   **publish.yml**, and the matching **testpypi** or **pypi** environment name.
-   No long-lived PyPI API token is required.
-4. Ensure `toolframe-sdk==0.2.0` is available on the intended consumer index before
-   advertising an index-only installation. CI's SDK wheel is a validation input;
-   this workflow uploads only the dashboard package.
-5. Dispatch `publish.yml` at the version tag with the selected repository, for
-   example `gh workflow run publish.yml --ref v0.4.1 -f repository=testpypi`.
-
-Publishing reruns both CI matrix jobs on the dispatched commit, then downloads
-the Ubuntu distribution artifact from **that same workflow run**. It never
-rebuilds after validation or downloads artifacts from a separate PR run. The
-upload job alone has `id-token: write` and uses the PyPA publishing action in the
-selected GitHub environment. SDK wheels and verification reports are separate
-artifacts and cannot enter the upload directory. Existing package versions are
-not silently skipped; plan a new version/tag for subsequent releases.
-
-See the official [uv CI guide](https://docs.astral.sh/uv/guides/integration/github/),
-[GitHub runner labels](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
-and [PyPI Trusted Publishing guide](https://docs.pypi.org/trusted-publishers/using-a-publisher/).
+See [releasing](releasing.md) for dependency order, private repository access,
+Trusted Publisher bindings, version tags and consumer installation checks.
 
 ## Validation limits
 

@@ -9,8 +9,15 @@ description = "Native Streamlit page and management provider for Toolframe"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "byfb", email = "62798989+byfb@users.noreply.github.com" }]
 requires-python = ">=3.14"
 dependencies = ["toolframe-sdk>=0.2,<0.4", "streamlit==1.61.0", "uvicorn==0.42.0"]
+
+[project.urls]
+Homepage = "https://github.com/toolframe/toolframe-streamlit-dashboard"
+Repository = "https://github.com/toolframe/toolframe-streamlit-dashboard"
+Documentation = "https://github.com/toolframe/toolframe-streamlit-dashboard#readme"
+Issues = "https://github.com/toolframe/toolframe-streamlit-dashboard/issues"
 
 [project.entry-points."toolframe.plugins"]
 streamlit-dashboard = "toolframe_streamlit_dashboard.plugin:plugin"

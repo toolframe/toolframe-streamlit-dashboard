@@ -11,6 +11,17 @@ reduced-motion preferences disable the rotation. The narrowly scoped styling
 targets Streamlit 1.61's busy-widget test ID and should be checked on upgrades.
 Plugin lifecycle operations remain available on the Toolframe management page.
 
+## Install
+
+Install the provider into a running [Toolframe application](https://github.com/toolframe/toolframe-core#readme):
+
+```sh
+toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.4.2 --enable
+```
+
+Core resolves dependencies and manages the provider's isolated Python environment.
+The Entry Register template already includes this provider.
+
 Core resolves the provider and all contributing plugin wheels (with their `ui`
 extras) together before replacing the worker. Changing any page package replaces
 the whole Dashboard. Browser sessions reconnect and session state may reset;
@@ -98,6 +109,8 @@ For fresh-environment CI checks, run
 `uv run --isolated --no-project --python 3.14.7 python -I scripts/validate.py`.
 See [CI and package publishing](docs/ci.md) for GitHub Actions, validation artifacts,
 pinned SDK prerequisites and manual TestPyPI/PyPI Trusted Publishing setup.
+
+For release validation and Trusted Publisher setup, see [releasing](docs/releasing.md).
 
 ## License
 
