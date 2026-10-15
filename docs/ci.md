@@ -1,6 +1,6 @@
 # CI and package publishing
 
-`Python CI` runs on pull requests, pushes (including tags), manual dispatches and
+`Python CI` runs on pull requests, pushes to `main`, manual dispatches and
 calls from the publishing workflow. It uses Python **3.14.7** and uv **0.12.8** on
 `ubuntu-24.04` and `macos-15`. Actions are pinned to full commit IDs. Default
 permissions are `contents: read`; checkout credentials are not persisted.
