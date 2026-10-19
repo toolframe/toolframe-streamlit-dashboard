@@ -17,7 +17,7 @@ REPORT = {
             "version": "1.0.0",
             "definition_source": "selected",
         }
-        for name in ("alpha", "storage", "dashboard")
+        for name in ("alpha", "sql", "dashboard")
     ]
     + [
         {
@@ -32,7 +32,7 @@ REPORT = {
     "edges": [
         {
             "source": "alpha",
-            "target": "storage",
+            "target": "sql",
             "kind": "required",
             "label": "storage.sql v1",
             "state": "resolved",
@@ -134,4 +134,4 @@ def test_dot_encodes_labels_and_highlights_separately_from_health():
     assert 'color="#ea580c"' in dot  # affected shared provider
     assert 'fillcolor="#ffe4e6"' in dot  # failure is still visible
     assert 'style="dashed"' in dot and 'style="dotted"' in dot
-    assert '"alpha" -> "storage"' in dot
+    assert '"alpha" -> "sql"' in dot
