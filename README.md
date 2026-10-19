@@ -16,7 +16,7 @@ Plugin lifecycle operations remain available on the Toolframe management page.
 Install the provider into a running [Toolframe application](https://github.com/toolframe/toolframe-core#readme):
 
 ```sh
-toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.4.2 --enable
+toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.5.0 --enable
 ```
 
 Core resolves dependencies and manages the provider's isolated Python environment.
