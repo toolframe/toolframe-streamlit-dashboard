@@ -16,7 +16,7 @@ import tomllib
 import zipfile
 from pathlib import Path
 
-SDK_REVISION = "2cd153ec36c585a9adb5ad566effc2985d9e222d"
+SDK_REVISION = "539ced4dbdf9e303ec0f0205a35d65287a480b2a"
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -48,20 +48,18 @@ def copy_working_tree(destination):
 
 
 def check_licenses(source, wheel, sdist):
+    project = tomllib.loads((source / "pyproject.toml").read_text())["project"]
+    package = project["name"].replace("-", "_")
+    prefix = f"{package}-{project['version']}"
     with zipfile.ZipFile(wheel) as archive:
-        for name in ("LICENSE", "NOTICE"):
-            matches = [p for p in archive.namelist() if p.endswith(f"/licenses/{name}")]
-            if (
-                len(matches) != 1
-                or archive.read(matches[0]) != (source / name).read_bytes()
-            ):
-                raise RuntimeError(f"Wheel does not preserve {name}")
+        for name in project["license-files"]:
+            member = f"{prefix}.dist-info/licenses/{name}"
+            if archive.read(member) != (source / name).read_bytes():
+                raise RuntimeError(f"Wheel changed {name}")
     with tarfile.open(sdist) as archive:
-        for name in ("LICENSE", "NOTICE"):
-            matches = [p for p in archive.getnames() if p.endswith(f"/{name}")]
-            if len(matches) != 1:
-                raise RuntimeError(f"sdist does not preserve {name}")
-            if archive.extractfile(matches[0]).read() != (source / name).read_bytes():
+        for name in project["license-files"]:
+            member = f"{prefix}/{name}"
+            if archive.extractfile(member).read() != (source / name).read_bytes():
                 raise RuntimeError(f"sdist changed {name}")
 
 

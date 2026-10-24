@@ -60,7 +60,7 @@ admission. Schema 1 keeps Dashboard at `/`. Schema 2 can select, for example,
 provider advertises `gateway-endpoints-v1`, sets Streamlit baseUrlPath during
 activation, and follows Core links for sign-out and authorized Web entrances.
 Mount changes replace the Dashboard worker; page URLs and WebSockets use the
-new base. The 0.5.1 combination requires the supplied SDK `0.4.0+web.1` wheel. Streamlit owns its server lifespan and script threads. A stuck script
+new base. The 0.5.1 combination requires SDK `0.4.1`. Streamlit owns its server lifespan and script threads. A stuck script
 thread is a cleanup failure, never a successful in-process code reload.
 
 SDK 0.2 page contexts carry a host-issued reference for each browser connection.
