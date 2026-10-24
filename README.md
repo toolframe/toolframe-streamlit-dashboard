@@ -16,8 +16,34 @@ Plugin lifecycle operations remain available on the Toolframe management page.
 Install the provider into a running [Toolframe application](https://github.com/toolframe/toolframe-core#readme):
 
 ```sh
-toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.5.0 --enable
+toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.5.1 --enable
 ```
+
+## Optional Notes template
+
+The distribution also supplies `toolframe-streamlit-dashboard/notes` through its
+static authoring manifest. It is the explicit replacement for the earlier default
+Notes scaffold; plain `plugin new NAME` now creates Core's provider-free basic
+service. A matching local wheel can be inspected and used without a running
+application or enabled Dashboard:
+
+```sh
+toolframe --home APP template show toolframe-streamlit-dashboard/notes --from wheel:/path/to/toolframe_streamlit_dashboard-0.5.1-py3-none-any.whl --json
+toolframe --home APP plugin new notes --from wheel:/path/to/toolframe_streamlit_dashboard-0.5.1-py3-none-any.whl --template toolframe-streamlit-dashboard/notes
+```
+
+The template includes managed SQL Notes, a Streamlit page, a read-only MCP resource
+and an llms document. Select the desired entrances and access policies, build the
+business plugin, and explicitly install/enable the required providers. Retrieving
+or generating the template does not change application composition. Index sources
+require a published authoring wheel or configured matching local wheels.
+`--presentation dashboard` remains a compatibility alias.
+
+The template is MIT-licensed and generated projects retain its license. The
+provider remains Apache-2.0; see [NOTICE](NOTICE). Template upgrades affect future
+generation only; edit existing projects directly.
+
+## Runtime behavior
 
 Core resolves dependencies and manages the provider's isolated Python environment.
 The Entry Register template already includes this provider.
@@ -28,8 +54,13 @@ the whole Dashboard. Browser sessions reconnect and session state may reset;
 business services and their persisted data remain independently owned.
 
 The provider binds an ephemeral private loopback port and reports it to core.
-Core owns the stable `/` gateway, management credentials and HTTP/WebSocket
-admission. Streamlit owns its server lifespan and script threads. A stuck script
+Core owns the selected public mount, management credentials and HTTP/WebSocket
+admission. Schema 1 keeps Dashboard at `/`. Schema 2 can select, for example,
+`provider.dashboard = { prefix = "/console" }` under `[gateway.mounts]`. The
+provider advertises `gateway-endpoints-v1`, sets Streamlit baseUrlPath during
+activation, and follows Core links for sign-out and authorized Web entrances.
+Mount changes replace the Dashboard worker; page URLs and WebSockets use the
+new base. The 0.5.1 combination requires SDK `0.4.1`. Streamlit owns its server lifespan and script threads. A stuck script
 thread is a cleanup failure, never a successful in-process code reload.
 
 SDK 0.2 page contexts carry a host-issued reference for each browser connection.
@@ -39,9 +70,9 @@ Navigation filters page scopes and the plugin-management page requires
 scopes. A password without system grants cannot reach these operations through
 the bridge. Incoming browser identity headers are not trusted.
 
-The shared header displays local control, protected access or public access with
-its reason. It remains present when the separate Dashboard Auth plugin is
-unavailable. Its one-second refresh is presentation polling and does not count
+The shared header displays **Local control**, **Protected access** or
+**Public access mode** with its reason. It remains present when the separate
+Dashboard Auth plugin is unavailable. Its one-second refresh is presentation polling and does not count
 as password activity. Use `activity=False` for other background service polling.
 
 `prepare` imports and validates page entry points without rendering them. A
