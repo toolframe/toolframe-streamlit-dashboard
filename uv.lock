@@ -926,6 +926,7 @@ dev = [
     { name = "pytest", specifier = ">=8,<10" },
     { name = "pytest-asyncio", specifier = ">=1,<2" },
     { name = "ruff", specifier = ">=0.12,<1" },
+    { name = "tomlkit", specifier = ">=0.13,<1" },
 ]
 
 [[package]]
@@ -936,6 +937,11 @@ dependencies = [
     { name = "streamlit" },
     { name = "toolframe-sdk" },
     { name = "uvicorn" },
+]
+
+[package.optional-dependencies]
+authoring = [
+    { name = "tomlkit" },
 ]
 
 [package.dev-dependencies]
@@ -950,9 +956,11 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "streamlit", specifier = "==1.61.0" },
+    { name = "tomlkit", marker = "extra == 'authoring'", specifier = ">=0.13,<1" },
     { name = "toolframe-sdk", editable = "../toolframe-sdk" },
     { name = "uvicorn", specifier = "==0.42.0" },
 ]
+provides-extras = ["authoring"]
 
 [package.metadata.requires-dev]
 dev = [
