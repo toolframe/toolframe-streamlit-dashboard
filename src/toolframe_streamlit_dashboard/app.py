@@ -1,6 +1,7 @@
 """Executed by Streamlit in its normal script thread."""
 
 from functools import partial
+from html import escape
 from pathlib import Path
 
 import streamlit as st
@@ -45,11 +46,14 @@ except PluginError as error:
 access_header()
 if access["actor"] in {"password", "operator", "user"}:
     st.markdown(
-        '<form method="post" action="/_toolframe/auth/logout"><button type="submit">Sign out</button></form>',
+        f'<form method="post" action="{escape(provider.logout_url(access), quote=True)}"><button type="submit">Sign out</button></form>',
         unsafe_allow_html=True,
     )
 else:
     st.link_button("Sign in", access["login_url"])
+for target, url in access.get("links", {}).items():
+    if target.startswith("web."):
+        st.link_button(target, url)
 navigation = [
     st.Page(
         partial(provider.render_page, page, epoch),

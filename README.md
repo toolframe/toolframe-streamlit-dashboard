@@ -16,7 +16,7 @@ Plugin lifecycle operations remain available on the Toolframe management page.
 Install the provider into a running [Toolframe application](https://github.com/toolframe/toolframe-core#readme):
 
 ```sh
-toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.5.0 --enable
+toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.5.1 --enable
 ```
 
 Core resolves dependencies and manages the provider's isolated Python environment.
@@ -28,8 +28,13 @@ the whole Dashboard. Browser sessions reconnect and session state may reset;
 business services and their persisted data remain independently owned.
 
 The provider binds an ephemeral private loopback port and reports it to core.
-Core owns the stable `/` gateway, management credentials and HTTP/WebSocket
-admission. Streamlit owns its server lifespan and script threads. A stuck script
+Core owns the selected public mount, management credentials and HTTP/WebSocket
+admission. Schema 1 keeps Dashboard at `/`. Schema 2 can select, for example,
+`provider.dashboard = { prefix = "/console" }` under `[gateway.mounts]`. The
+provider advertises `gateway-endpoints-v1`, sets Streamlit baseUrlPath during
+activation, and follows Core links for sign-out and authorized Web entrances.
+Mount changes replace the Dashboard worker; page URLs and WebSockets use the
+new base. The 0.5.1 combination requires the supplied SDK `0.4.0+web.1` wheel. Streamlit owns its server lifespan and script threads. A stuck script
 thread is a cleanup failure, never a successful in-process code reload.
 
 SDK 0.2 page contexts carry a host-issued reference for each browser connection.

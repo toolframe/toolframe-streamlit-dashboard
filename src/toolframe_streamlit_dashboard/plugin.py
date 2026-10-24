@@ -15,6 +15,7 @@ from toolframe_sdk import (
     PluginError,
     load_object,
 )
+from toolframe_sdk.web import public_base
 
 _current = None
 
@@ -40,6 +41,19 @@ class DashboardProvider(Plugin):
         self.snapshot = (None, ())
         self.staged = {}
 
+    def public_base(self):
+        if self.context.endpoints.get("profile") != "gateway-v2":
+            return ""
+        try:
+            return public_base(self.context.endpoints["public_base"]).strip("/")
+        except (KeyError, ValueError, TypeError) as error:
+            raise PluginError(
+                "gateway_endpoints_invalid", "Invalid Dashboard public_base"
+            ) from error
+
+    def logout_url(self, access):
+        return access.get("logout_url", "/_toolframe/auth/logout")
+
     async def activate(self):
         global _current
         from streamlit import config
@@ -49,6 +63,7 @@ class DashboardProvider(Plugin):
         for name, value in {
             "server.address": "127.0.0.1",
             "server.port": 0,
+            "server.baseUrlPath": self.public_base(),
             "server.headless": True,
             "server.fileWatcherType": "none",
             "server.runOnSave": False,
@@ -65,6 +80,8 @@ class DashboardProvider(Plugin):
     async def health(self):
         return {
             "runtime": "ready",
+            "capabilities": ["gateway-endpoints-v1"],
+            "public_base": "/" + self.public_base(),
             "business": "not_provided",
             "http_url": self.url,
             "epoch": self.snapshot[0],
