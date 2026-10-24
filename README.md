@@ -70,9 +70,9 @@ Navigation filters page scopes and the plugin-management page requires
 scopes. A password without system grants cannot reach these operations through
 the bridge. Incoming browser identity headers are not trusted.
 
-The shared header displays local control, protected access or public access with
-its reason. It remains present when the separate Dashboard Auth plugin is
-unavailable. Its one-second refresh is presentation polling and does not count
+The shared header displays **Local control**, **Protected access** or
+**Public access mode** with its reason. It remains present when the separate
+Dashboard Auth plugin is unavailable. Its one-second refresh is presentation polling and does not count
 as password activity. Use `activity=False` for other background service polling.
 
 `prepare` imports and validates page entry points without rendering them. A

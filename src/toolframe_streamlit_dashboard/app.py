@@ -24,14 +24,14 @@ def access_header():
         st.error(error.message)
         return
     if current_access["local_control"]:
-        st.caption("本機控制 · Local control")
+        st.caption("Local control")
     if current_access["mode"] == "public":
         reason = (
             "Auth unavailable: " + current_access.get("detail", "")
             if current_access["reason"] == "auth_unavailable"
             else "Public business access"
         )
-        st.warning("目前處於公開訪問模式 · " + reason)
+        st.warning("Public access mode · " + reason)
     elif current_access["mode"] == "waiting":
         st.info("Access is preparing. Reconnecting shortly…")
     else:
