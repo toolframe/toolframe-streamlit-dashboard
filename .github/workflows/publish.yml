@@ -2,21 +2,12 @@ name: Publish Python package
 
 on:
   workflow_dispatch:
-    inputs:
-      repository:
-        description: Package index
-        type: choice
-        required: true
-        default: testpypi
-        options:
-          - testpypi
-          - pypi
 
 permissions:
   contents: read
 
 concurrency:
-  group: dashboard-publish-${{ github.ref }}-${{ inputs.repository }}
+  group: dashboard-publish-${{ github.ref }}-pypi
   cancel-in-progress: false
 
 jobs:
@@ -34,9 +25,7 @@ jobs:
           python-version: '3.14.7'
       - name: Check tag against project.version
         shell: bash
-        env:
-          PUBLISH_REPOSITORY: ${{ inputs.repository }}
-        run: python scripts/check_release.py "$GITHUB_REF" --repository "$PUBLISH_REPOSITORY"
+        run: python scripts/check_release.py "$GITHUB_REF"
 
   validate:
     needs: release-ref
@@ -51,8 +40,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment:
-      name: ${{ inputs.repository }}
-      url: ${{ inputs.repository == 'pypi' && 'https://pypi.org/p/toolframe-streamlit-dashboard' || 'https://test.pypi.org/p/toolframe-streamlit-dashboard' }}
+      name: pypi
+      url: https://pypi.org/p/toolframe-streamlit-dashboard
     permissions:
       id-token: write
     steps:
@@ -65,4 +54,4 @@ jobs:
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
         with:
           packages-dir: dist/
-          repository-url: ${{ inputs.repository == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+          repository-url: https://upload.pypi.org/legacy/

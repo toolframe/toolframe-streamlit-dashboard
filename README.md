@@ -139,7 +139,7 @@ runtime singleton belongs to the process, not a reloadable plugin object.
 For fresh-environment CI checks, run
 `uv run --isolated --no-project --python 3.14.7 python -I scripts/validate.py`.
 See [CI and package publishing](docs/ci.md) for GitHub Actions, validation artifacts,
-pinned SDK prerequisites and manual TestPyPI/PyPI Trusted Publishing setup.
+pinned SDK prerequisites and manual PyPI Trusted Publishing setup.
 
 For release validation and Trusted Publisher setup, see [releasing](docs/releasing.md).
 

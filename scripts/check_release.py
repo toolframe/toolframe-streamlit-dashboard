@@ -8,9 +8,6 @@ from pathlib import Path
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("ref", help="Full Git ref, such as refs/tags/v0.4.1")
-    parser.add_argument(
-        "--repository", choices=("testpypi", "pypi"), default="testpypi"
-    )
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     version = tomllib.loads((root / "pyproject.toml").read_text())["project"]["version"]
