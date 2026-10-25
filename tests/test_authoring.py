@@ -17,9 +17,11 @@ def test_manifest_template_and_public_contracts(tmp_path, monkeypatch):
         )
     )
     assert manifest["templates"][0]["id"] == "notes"
+    assert manifest["requires_core"] == ">=0.8,<1"
     generate(destination=tmp_path, parameters={"name": "customer-notes"})
     project = tomllib.loads((tmp_path / "pyproject.toml").read_text())["project"]
     assert project["name"] == "toolframe-customer-notes"
+    assert project["dependencies"] == ["toolframe-sdk>=0.4.1,<1"]
     assert project["entry-points"]["toolframe.plugins"] == {
         "customer-notes": "toolframe_customer_notes.plugin:plugin"
     }
