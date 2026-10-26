@@ -16,7 +16,7 @@ Plugin lifecycle operations remain available on the Toolframe management page.
 Install the provider into a running [Toolframe application](https://github.com/toolframe/toolframe-core#readme):
 
 ```sh
-toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.5.1 --enable
+toolframe --home APP plugin add pypi:toolframe-streamlit-dashboard==0.5.2 --enable
 ```
 
 ## Optional Notes template
@@ -28,8 +28,8 @@ service. A matching local wheel can be inspected and used without a running
 application or enabled Dashboard:
 
 ```sh
-toolframe --home APP template show toolframe-streamlit-dashboard/notes --from wheel:/path/to/toolframe_streamlit_dashboard-0.5.1-py3-none-any.whl --json
-toolframe --home APP plugin new notes --from wheel:/path/to/toolframe_streamlit_dashboard-0.5.1-py3-none-any.whl --template toolframe-streamlit-dashboard/notes
+toolframe --home APP template show toolframe-streamlit-dashboard/notes --from wheel:/path/to/toolframe_streamlit_dashboard-0.5.2-py3-none-any.whl --json
+toolframe --home APP plugin new notes --from wheel:/path/to/toolframe_streamlit_dashboard-0.5.2-py3-none-any.whl --template toolframe-streamlit-dashboard/notes
 ```
 
 The template includes managed SQL Notes, a Streamlit page, a read-only MCP resource
@@ -60,7 +60,7 @@ admission. Schema 1 keeps Dashboard at `/`. Schema 2 can select, for example,
 provider advertises `gateway-endpoints-v1`, sets Streamlit baseUrlPath during
 activation, and follows Core links for sign-out and authorized Web entrances.
 Mount changes replace the Dashboard worker; page URLs and WebSockets use the
-new base. The 0.5.1 combination requires SDK `0.4.1`. Streamlit owns its server lifespan and script threads. A stuck script
+new base. The provider requires SDK `>=0.4.1,<1`. Streamlit owns its server lifespan and script threads. A stuck script
 thread is a cleanup failure, never a successful in-process code reload.
 
 SDK 0.2 page contexts carry a host-issued reference for each browser connection.
