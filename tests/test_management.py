@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 
 import pytest
@@ -136,6 +137,91 @@ def click(ui, label):
     ui.run()
     assert not ui.exception
     return ui
+
+
+class DiagnosesProvider(FakeProvider):
+    def __init__(self, diagnoses):
+        super().__init__()
+        self.diagnoses = diagnoses
+
+    def access(self, action):
+        assert action == "presentation"
+        return {"allowed_scopes": ["system.plugins.read"]}
+
+    def manage(self, action, params=None):
+        result = super().manage(action, params)
+        if action == "status":
+            result["diagnoses"] = deepcopy(self.diagnoses)
+        return result
+
+
+@pytest.fixture
+def diagnoses():
+    return [
+        {
+            "code": "missing_required_service",
+            "plugin_id": "alpha",
+            "summary": "Required service notes.store is unavailable.",
+            "next_step": "Enable the configured SQL provider, then preview enable.",
+            "evidence": {"service": "notes.store", "provider_state": "disabled"},
+        },
+        {
+            "code": "optional_service_missing",
+            "plugin_id": "alpha",
+            "summary": "Optional service audit.events is unavailable.",
+            "next_step": "Enable an audit provider if event recording is needed.",
+            "evidence": {},
+        },
+        {
+            "code": "stale_health",
+            "plugin_id": "beta",
+            "summary": "The last health observation is stale.",
+            "next_step": "Refresh status to check the latest observation.",
+            "evidence": {"observed_at": 1789959000, "health_fresh": False},
+        },
+    ]
+
+
+def test_core_diagnoses_show_reason_action_and_optional_evidence_read_only(diagnoses):
+    provider = DiagnosesProvider(diagnoses)
+    ui = run_management(provider)
+
+    assert not ui.exception
+    assert any(item.value == "Plugin diagnoses" for item in ui.subheader)
+    messages = [item.value for item in ui.markdown]
+    for diagnosis in diagnoses:
+        assert f"{diagnosis['plugin_id']} · {diagnosis['summary']}" in messages
+        assert diagnosis["next_step"] in messages
+    assert [
+        item.label for item in ui.expander if item.label.startswith("Evidence")
+    ] == [
+        "Evidence · missing_required_service",
+        "Evidence · stale_health",
+    ]
+    assert [json.loads(item.value) for item in ui.json] == [
+        diagnoses[0]["evidence"],
+        diagnoses[2]["evidence"],
+    ]
+    # Optional observations must not become a Dashboard readiness decision.
+    assert any("Application: ready" in item.value for item in ui.caption)
+    assert not ui.error
+    assert all(action in {"status", "operations"} for action, _ in provider.calls)
+    assert not any(button.label == "Install and validate" for button in ui.button)
+
+    provider.diagnoses = []
+    click(ui, "Refresh status")
+    assert not any(item.value == "Plugin diagnoses" for item in ui.subheader)
+    assert not any(item.label.startswith("Evidence") for item in ui.expander)
+    assert all(action in {"status", "operations"} for action, _ in provider.calls)
+
+
+@pytest.mark.parametrize("provider", [FakeProvider(), DiagnosesProvider([])])
+def test_missing_or_empty_diagnoses_keep_existing_management(provider):
+    ui = run_management(provider)
+    assert not ui.exception
+    assert ui.dataframe[0].value.iloc[0]["Plugin"] == "alpha"
+    assert not any(item.value == "Plugin diagnoses" for item in ui.subheader)
+    assert not any(item.label.startswith("Evidence") for item in ui.expander)
 
 
 @pytest.mark.parametrize("action", ["enable", "reload", "disable", "stop", "remove"])

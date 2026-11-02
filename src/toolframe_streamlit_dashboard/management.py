@@ -39,6 +39,7 @@ def render_management(provider):
         for item in status["plugins"]
     ]
     st.dataframe(rows, hide_index=True, width="stretch")
+    render_diagnoses(status)
     render_dependencies(status)
     st.caption(
         "Disabled plugins remain in this list so you can enable them again. "
@@ -134,6 +135,20 @@ def render_management(provider):
     if not identifiers:
         render_operation(provider)
     render_history(provider, permissions, track_operation, submit)
+
+
+def render_diagnoses(status):
+    diagnoses = status.get("diagnoses") or []
+    if not diagnoses:
+        return
+    st.subheader("Plugin diagnoses")
+    for diagnosis in diagnoses:
+        with st.container(border=True):
+            st.write(f"{diagnosis['plugin_id']} · {diagnosis['summary']}")
+            st.write(diagnosis["next_step"])
+            if diagnosis.get("evidence"):
+                with st.expander(f"Evidence · {diagnosis['code']}"):
+                    st.json(diagnosis["evidence"])
 
 
 def submit(provider, action, params):
