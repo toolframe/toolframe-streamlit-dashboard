@@ -81,10 +81,23 @@ at the latest first page. The count indicates newer arrivals; statuses remain
 current. Read-only operators can filter, page and inspect results, while apply
 and cancel retain their existing scope checks.
 
+## Plugin diagnoses
+
+When Core includes `diagnoses` in its management status, **Plugin diagnoses**
+shows each affected plugin, the reason and Core's suggested next step below the
+status table. Expand **Evidence** to inspect the supporting observations and
+diagnosis code. **Refresh status** refreshes these explanations with the table.
+
+Diagnoses use the existing `system.plugins.read` access and status request.
+Suggested steps are text; use the existing operation controls to make changes.
+Core owns the explanations and readiness result, including the distinction
+between required and optional dependencies. An older Core without `diagnoses`,
+or an empty list, adds no diagnosis section.
+
 ## Dependency and impact view
 
-The **Plugin dependencies & impact** accordion sits directly below the status
-table and starts collapsed. It reads core's `dependency_graph` diagnostics
+The **Plugin dependencies & impact** accordion follows the status table and any
+diagnoses, and starts collapsed. It reads core's `dependency_graph` diagnostics
 (core 0.4.0+) under the existing `system.plugins.read` permission. Nodes show
 Cordis lifecycle state and current health; arrows run from consumer to supplier.
 Solid lines are required services, dashed lines optional services, and dotted
